@@ -6,6 +6,7 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -13,12 +14,15 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 
+import TCPClasses.TCPModel;
+import TCPClasses.TCPThermometers;
 import org.energy2d.event.ManipulationEvent;
 import org.energy2d.event.ManipulationListener;
 import org.energy2d.math.Annulus;
 import org.energy2d.math.Blob2D;
 import org.energy2d.math.EllipticalAnnulus;
 import org.energy2d.math.Polygon2D;
+
 
 /**
  * Units:
@@ -125,6 +129,9 @@ public class Model2D {
     private List<PropertyChangeListener> propertyChangeListeners;
     private List<ManipulationListener> manipulationListeners;
     private Runnable tasks;
+
+    public TCPModel model;
+    public TCPThermometers lsThermo;
 
     public Model2D() {
 
@@ -1643,7 +1650,15 @@ public class Model2D {
     }
 
     public void run() {
-        System.out.println("LOOL");
+        //System.out.println("LOOL");
+        try {
+            model = new TCPModel(9998,"localhost",t);
+            lsThermo = new TCPThermometers(9999,"localhost",thermometers);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        model.run();
+        lsThermo.run();
         checkPartPower();
         checkPartRadiation();
         refreshPowerArray();
@@ -1675,6 +1690,8 @@ public class Model2D {
 
     public void stop() {
         running = false;
+        model.interrupt();
+        lsThermo.interrupt();
     }
 
     public boolean isRunning() {

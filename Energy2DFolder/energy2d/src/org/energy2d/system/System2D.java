@@ -114,6 +114,7 @@ public class System2D extends JApplet implements ManipulationListener {
     private static boolean appDirectoryWritable = true;
     private static System2D box;
 
+
     public System2D() {
 
         // Locale.setDefault(Locale.US); for the applet, this is a security violation
